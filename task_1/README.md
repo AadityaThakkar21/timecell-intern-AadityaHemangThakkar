@@ -248,57 +248,70 @@ metrics = compute_risk_metrics(portfolio_dict)
 
 ## AI Usage Note
 
-This project was developed using Claude and GitHub Copilot
+This project was developed using **Claude** and **Copilot**
 as AI pair-programmers. AI was not used as a black box — every suggestion was
-read, understood, questioned, and validated before being accepted into the
-codebase.
-Tools Used
-ToolPrimary RoleClaude (Anthropic)Architecture design, logic reasoning, test generation, docsGitHub CopilotInline autocomplete, boilerplate acceleration, refactoring
+read, questioned, and validated.
 
-Prompting Approach
-Rather than asking vague questions, prompts were crafted to be
-specific, constrained, and iterative — treating the AI as a junior engineer
-who needs clear requirements.
-1. Context framing
+### Tools Used
+
+| Tool               | Primary Role                                                  |
+|--------------------|---------------------------------------------------------------|
+| Claude (Anthropic) | Architecture design, logic reasoning, test generation, docs  |
+| GitHub Copilot     | Inline autocomplete, boilerplate acceleration, refactoring    |
+
+---
+
+### Prompting Approach
+
+Rather than asking vague questions, prompts were crafted to be specific,
+constrained, and iterative — treating the AI as a junior engineer who needs
+clear requirements.
+
+**1. Context framing**
+
 Prompts opened by establishing the domain and constraints upfront, so the
 model had full context before generating anything:
 
-"You are helping build a financial risk calculator in Python 3.10+. No
-external libraries. The core function must accept a portfolio dict and return
-specific keys. Here is the input schema…"
+> *"You are helping build a financial risk calculator in Python 3.10+. No
+> external libraries. The core function must accept a portfolio dict and return
+> specific keys. Here is the input schema…"*
 
 This avoided generic solutions and kept output tightly scoped to the task.
-2. Asking for reasoning, not just code
-Before accepting any formula or design, the model was asked to explain its
-logic:
 
-This caught an early ambiguity in how magnitude should interact with
-expected_crash_pct, which was resolved in discussion before a single line
-of code was written.
-3. Structured output requests
+**2. Asking for reasoning, not just code**
+
+Before accepting any formula or design, the model was asked to explain its
+logic first. This caught an early ambiguity in how `magnitude` should interact
+with `expected_crash_pct`, which was resolved in discussion before a single
+line of code was written.
+
+**3. Structured output requests**
+
 For the data model, the prompt specified the exact structure expected rather
 than leaving it open:
 
-"Represent each asset as a dataclass with name, allocation_pct, and
-expected_crash_pct. The Portfolio class should own the scenario
-computation methods. Show me only the class definitions first, no main
-function yet."
+> *"Represent each asset as a dataclass with `name`, `allocation_pct`, and
+> `expected_crash_pct`. The `Portfolio` class should own the scenario
+> computation methods. Show me only the class definitions first, no main
+> function yet."*
 
 Breaking requests into small, reviewable pieces meant each chunk could be
 verified before building on top of it.
-4. Edge-case-first test generation
+
+**4. Edge-case-first test generation**
+
 Instead of asking for "some unit tests", the prompt listed the specific
 scenarios to cover:
 
-"Write unittest cases for: (a) the worked example from the brief with
-manually verified expected values, (b) zero monthly expenses producing
-infinite runway, (c) a 100 % cash portfolio, (d) an invalid total value
-raising ValueError. Assert exact values, not just types."
+> *"Write unittest cases for: (a) the worked example from the brief with
+> manually verified expected values, (b) zero monthly expenses producing
+> infinite runway, (c) a 100 % cash portfolio, (d) an invalid total value
+> raising ValueError. Assert exact values, not just types."*
 
-5. Copilot for speed, Claude for reasoning
+**5. Copilot for speed, Claude for reasoning**
+
 GitHub Copilot was used for repetitive or mechanical code — filling out
 dataclass fields, completing f-string formatting, and generating the Unicode
-bar-chart loop once the pattern was established. Claude was used when
-decisions required reasoning: choosing dataclasses over TypedDict,
-deciding where validation should live, and structuring the two-scenario
-return dictionary.
+bar-chart loop once the pattern was established. Claude was used when decisions
+required reasoning: choosing `dataclasses` over `TypedDict`, deciding where
+validation should live, and structuring the two-scenario return dictionary.
