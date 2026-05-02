@@ -28,6 +28,10 @@ env/
 
 # IDE
 .vscode/
+
+# Environment variables
+.env
+*.env
 .idea/
 *.swp
 *.swo
